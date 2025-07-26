@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    /*--font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',*/
+    /*    'Segoe UI Symbol', 'Noto Color Emoji'; */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-green-spotify: #1DB954;
+    --color-sidebar-spotify: #212121;
+    --color-container-spotify: #121212;
+}
+
+.cst-scrollbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.cst-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #36de95;
+    opacity: 10;
+    border-radius: 10px;
+}
+
+.cst-scrollbar::-webkit-scrollbar-track {
+    background: #20392F;
+}
+
+.cst-scrollbar-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.cst-scrollbar-body::-webkit-scrollbar-thumb {
+    background-color: #36de95;
+    opacity: 10;
+}
+
+.cst-scrollbar-body::-webkit-scrollbar-track {
+    background: #0e0e19;
+}
+
+
+.spinner {
+    -webkit-animation: rotator 1.4s linear infinite;
+    animation: rotator 1.4s linear infinite;
+}
+
+@-webkit-keyframes rotator {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(270deg);
+        transform: rotate(270deg);
+    }
+}
+
+@keyframes rotator {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(270deg);
+        transform: rotate(270deg);
+    }
+}
+.path {
+    stroke-dasharray: 187;
+    stroke-dashoffset: 0;
+    -webkit-transform-origin: center;
+    -ms-transform-origin: center;
+    transform-origin: center;
+    -webkit-animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite;
+    animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite;
+}
+
+@-webkit-keyframes colors {
+    0% {
+        stroke: #4285F4;
+    }
+    25% {
+        stroke: #DE3E35;
+    }
+    50% {
+        stroke: #F7C223;
+    }
+    75% {
+        stroke: #1B9A59;
+    }
+    100% {
+        stroke: #4285F4;
+    }
+}
+
+@keyframes colors {
+    0% {
+        stroke: #4285F4;
+    }
+    25% {
+        stroke: #DE3E35;
+    }
+    50% {
+        stroke: #F7C223;
+    }
+    75% {
+        stroke: #1B9A59;
+    }
+    100% {
+        stroke: #4285F4;
+    }
+}
+@-webkit-keyframes dash {
+    0% {
+        stroke-dashoffset: 187;
+    }
+    50% {
+        stroke-dashoffset: 46.75;
+        -webkit-transform: rotate(135deg);
+        transform: rotate(135deg);
+    }
+    100% {
+        stroke-dashoffset: 187;
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+@keyframes dash {
+    0% {
+        stroke-dashoffset: 187;
+    }
+    50% {
+        stroke-dashoffset: 46.75;
+        -webkit-transform: rotate(135deg);
+        transform: rotate(135deg);
+    }
+    100% {
+        stroke-dashoffset: 187;
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+
+
+
+
+.gradient-bg {
+    background: linear-gradient(135deg,
+    #1a1a2e 0%,
+    #16213e 25%,
+    #0f3460 50%,
+    #533483 75%,
+    #7209b7 100%);
+    background-size: 300% 300%;
+}
+
+.glass {
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.text-glow {
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+}
+
+@keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .mobile-grid {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .mobile-header {
+        flex: 0 0 auto;
+        padding: 1rem;
+    }
+
+    .mobile-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0 1rem;
+        overflow-y: auto;
+    }
+
+    .mobile-footer {
+        flex: 0 0 auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .schedule-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Hide scrollbars */
+.mobile-content::-webkit-scrollbar {
+    display: none;
+}
+.mobile-content {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

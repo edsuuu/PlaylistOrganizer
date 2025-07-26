@@ -7,12 +7,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use OwenIt\Auditing\Contracts\Auditable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements Auditable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory,HasRoles, Notifiable, \OwenIt\Auditing\Auditable;
+    use HasFactory, Notifiable, \OwenIt\Auditing\Auditable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,11 +21,9 @@ class User extends Authenticatable implements Auditable
     protected $fillable = [
         'name',
         'email',
-        'cellphone',
-        'photo',
         'email_verified_at',
         'password',
-        'google_id',
+        'spotify_id',
     ];
 
     /**
@@ -37,7 +34,6 @@ class User extends Authenticatable implements Auditable
     protected $hidden = [
         'password',
         'remember_token',
-        'google_id',
     ];
 
     /**
@@ -52,8 +48,8 @@ class User extends Authenticatable implements Auditable
         ];
     }
 
-    public function tenant(): HasOne
+    public function spotify(): HasOne
     {
-        return $this->hasOne(Tenant::class, 'id', 'tenant_id');
+        return $this->hasOne(UserSpotify::class, 'user_id', 'id');
     }
 }

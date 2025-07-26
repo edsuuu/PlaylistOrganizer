@@ -17,7 +17,8 @@
         "league/flysystem-read-only": "^3.0",
         "livewire/livewire": "^3.5",
         "opcodesio/log-viewer": "^3.14",
-        "owen-it/laravel-auditing": "^14.0"
+        "owen-it/laravel-auditing": "^14.0",
+        "socialiteproviders/spotify": "^4.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",

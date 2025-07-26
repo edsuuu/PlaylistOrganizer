@@ -17,6 +17,10 @@
     --color-container-spotify: #121212;
 }
 
+body {
+    background-color: var(--color-container-spotify);
+}
+
 .cst-scrollbar::-webkit-scrollbar {
     width: 5px;
 }

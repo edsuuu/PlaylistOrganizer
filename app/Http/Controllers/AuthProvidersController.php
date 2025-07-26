@@ -4,72 +4,93 @@ namespace App\Http\Controllers;
 
 use App\Livewire\Actions\Logout;
 use App\Models\User;
-use GuzzleHttp\Exception\ClientException;
-use Illuminate\Contracts\Encryption\DecryptException;
+use App\Models\UserSpotify;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthProvidersController extends Controller
 {
     public function spotifyAuth()
     {
-        return Socialite::driver('spotify')->redirect();
+        return Socialite::driver('spotify')
+            ->scopes([
+                'user-read-playback-state',
+                'user-modify-playback-state',
+                'user-read-currently-playing',
+                'playlist-read-private',
+                'playlist-read-collaborative',
+                'playlist-modify-private',
+                'playlist-modify-public',
+                'user-read-playback-position',
+                'user-top-read',
+                'user-read-recently-played',
+                'user-read-email',
+                'user-library-modify',
+                'user-library-read',
+                'user-read-private',
+            ])
+            ->redirect();
     }
 
-    public static function login($userId, $domain, $remember = false)
-    {
-        $user = User::find($userId);
-        Auth::login($user, $remember);
-        return redirect()->route('dashboard');
-    }
-
-    public function googleCallback()
+    public function spotifyCallback()
     {
         try {
-            $googleUser = Socialite::driver('google')
+            $spotifyUser = Socialite::driver('spotify')
                 ->stateless()
                 ->user();
 
             $userDB = User::query()
-                ->with(['tenant.domain'])
-                ->where('email', $googleUser->user['email'])
-                ->orWhere('google_id', $googleUser->user['id'])
+                ->with('spotify')
+                ->where('email', $spotifyUser->user['email'])
+                ->where('spotify_id', $spotifyUser->user['id'])
                 ->first();
 
-            if (!$userDB) {
-                return redirect()->route('login')->withErrors(['google' => 'Erro ao autenticar com Google. Não existe conta com esse email vinculado.']);
-            }
-
-            if (!isset($userDB->google_id)) {
-                $userDB->update([
-                    'google_id' => $googleUser->user['id'],
+            if (!isset($userDB)) {
+                $userCreate = User::query()->create([
+                    'name' => $spotifyUser->user['display_name'],
+                    'email' =>  $spotifyUser->user['email'],
                     'email_verified_at' => now(),
+                    'password' => Hash::make(Str::random(16)),
+                    'spotify_id' => $spotifyUser->user['id'],
                 ]);
+
+                UserSpotify::query()->create([
+                    'user_id' => $userCreate->id,
+                    'external_urls' => $spotifyUser->user['external_urls']['spotify'],
+                    'href_profile' => $spotifyUser->user['href'],
+                    'product' => $spotifyUser->user['product'],
+                    'avatar' => $spotifyUser->user['images'][0]['url'],
+                    'accessToken' => json_encode($spotifyUser->accessTokenResponseBody),
+                    'country' => $spotifyUser->user['country'],
+                ]);
+
+                Auth::loginUsingId($userCreate->id, true);
+            } else {
+                UserSpotify::query()->updateOrCreate(
+                    [
+                        'user_id' => $userDB->id,
+                    ],
+                    [
+                        'product' => $spotifyUser->user['product'],
+                        'accessToken' => json_encode($spotifyUser->accessTokenResponseBody),
+                    ]);
+
+                Auth::login($userDB);
             }
-
-            if ($userDB->tenant === null) {
-                Auth::login($userDB, true);
-                // validar como vai funcionar o gerenciamento dos tentant
-                return redirect()->route('dashboard');
-            }
-
-            $token = encrypt(['user_id' => $userDB->id, 'expires' => now()->addMinutes(4), 'remember' => true]);
-
-            return redirect()->route('googleRedirectAuth', ['token' => $token]);
-        } catch (ClientException $e) {
-            Log::channel('daily')->error($e);
-            return redirect()->route('login')->withErrors(['google' => 'Erro ao autenticar com Google. Por favor, tente novamente.']);
+            session()->regenerate();
+            return redirect()->route('dashboard');
         } catch (\Exception $e) {
             Log::channel('daily')->error($e);
-            return redirect()->route('login')->withErrors(['error' => 'Ocorreu um erro inesperado. Tente novamente.']);
+            return redirect('/')->with('error', 'Erro ao autenticar com o Spotify. Tente novamente.');;
         }
     }
-
 
     public function logout(Logout $logout)
     {
         $logout();
-        return redirect('dashboard');
+        return redirect('/');
     }
 }

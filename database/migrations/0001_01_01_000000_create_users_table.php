@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('email', 100)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password', 100);
-            $table->string('cellphone')->nullable();
-            $table->string('google_id')->nullable()->unique();
+            $table->string('spotify_id')->nullable()->unique();
             $table->rememberToken();
             $table->timestamps();
         });

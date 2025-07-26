@@ -33,13 +33,19 @@
             </div>
 
 
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-                <a href=""
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-5">
+                <a href="{{ route('spotify-auth') }}"
                    class="w-full sm:w-auto px-8 py-4 flex items-center gap-4 bg-green-spotify text-white text-xl font-semibold rounded-full transition-all duration-300 hover:bg-green-600 hover:scale-105 hover:shadow-lg hover:shadow-green-spotify/20 text-center">
                     <img src="{{ asset('images/spotify.svg') }}" alt="spotify" class="w-10 h-10">
                     Login com Spotify
                 </a>
             </div>
+
+            @if(session('error'))
+                <div class="bg-red-500 inline-flex p-2 px-6 rounded-md">
+                    <span class="text-white font-bold"> {{ session('error') }}</span>
+                </div>
+            @endif
         </div>
     </div>
 

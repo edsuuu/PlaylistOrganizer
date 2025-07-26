@@ -6,11 +6,14 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::view('/', 'spotify.home-page')->name('home');
+Route::view('/', 'spotify.home-page')->name('login');
 
-Route::middleware('web')->get('oauth2/spotify', [AuthProvidersController::class, 'googleAuth'])->name('google');
-Route::middleware('web')->get('oauth2/spotify/callback', [AuthProvidersController::class, 'googleCallback']);
+Route::prefix('oauth2')->group(function () {
+    Route::get('spotify', [AuthProvidersController::class, 'spotifyAuth'])->middleware('web')->name('spotify-auth');
+    Route::get('spotify/callback', [AuthProvidersController::class, 'spotifyCallback'])->middleware('web');
+});
 
-Route::middleware(['auth', 'web'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::view('dashboard', 'spotify.dashboard')->name('dashboard');
 
 });

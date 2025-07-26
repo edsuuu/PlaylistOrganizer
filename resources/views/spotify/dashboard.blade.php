@@ -1,4 +1,3 @@
 <x-app-layout>
-    <livewire:spotify.dashboard />
-
+    <livewire:dashboard />
 </x-app-layout>

@@ -11,18 +11,22 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body>
+<body class="bg-container-spotify">
 
-@include('layout.navbar-auth-mobile')
-@livewire('modal')
-<div class="flex flex-col lg:flex-row">
-    @include('layout.navbar-auth-desktop')
-    <main class="flex-1 lg:pl-64">
-        <div class="p-6">
-            {{ $slot }}
-        </div>
-    </main>
-</div>
+{{--@include('layout.navbar-auth-mobile')--}}
+{{--@livewire('modal')--}}
+{{--<div class="flex flex-col lg:flex-row">--}}
+{{--    @include('layout.navbar-auth-desktop')--}}
+{{--    <main class="flex-1 lg:pl-64">--}}
+{{--        <div class="p-6">--}}
+{{--            {{ $slot }}--}}
+{{--        </div>--}}
+{{--    </main>--}}
+{{--</div>--}}
+
+<main>
+    {{ $slot }}
+</main>
 
 @livewireScripts
 </body>

@@ -26,13 +26,13 @@ body {
 }
 
 .cst-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #36de95;
+    background-color: var(--color-green-spotify);
     opacity: 10;
     border-radius: 10px;
 }
 
 .cst-scrollbar::-webkit-scrollbar-track {
-    background: #20392F;
+    background: var(--color-sidebar-spotify);
 }
 
 .cst-scrollbar-body::-webkit-scrollbar {
@@ -40,7 +40,7 @@ body {
 }
 
 .cst-scrollbar-body::-webkit-scrollbar-thumb {
-    background-color: #36de95;
+    background-color: var(--color-green-spotify);
     opacity: 10;
 }
 

@@ -73,6 +73,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'spotify' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/spotify.log'),
+            'level' => 'debug'  ,
+            'days' => env('LOG_DAILY_DAYS', 0),
+        ],
+
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

@@ -15,7 +15,9 @@ class UserSpotify extends Model
         'href_profile',
         'product',
         'avatar',
-        'accessToken',
+        'token',
+        'refresh_token',
+        'expires_token',
         'country'
     ];
 

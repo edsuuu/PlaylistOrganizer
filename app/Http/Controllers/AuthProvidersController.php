@@ -63,19 +63,22 @@ class AuthProvidersController extends Controller
                     'href_profile' => $spotifyUser->user['href'],
                     'product' => $spotifyUser->user['product'],
                     'avatar' => $spotifyUser->user['images'][0]['url'],
-                    'accessToken' => json_encode($spotifyUser->accessTokenResponseBody),
+                    'token' => $spotifyUser->token,
+                    'refresh_token' => $spotifyUser->refreshToken,
+                    'expires_token' => now()->addSeconds($spotifyUser->expiresIn),
                     'country' => $spotifyUser->user['country'],
                 ]);
 
                 Auth::loginUsingId($userCreate->id, true);
             } else {
-                UserSpotify::query()->updateOrCreate(
-                    [
-                        'user_id' => $userDB->id,
-                    ],
-                    [
+                UserSpotify::query()
+                    ->where('user_id', $userDB->id)
+                    ->update([
+                        'avatar' => $spotifyUser->user['images'][0]['url'],
                         'product' => $spotifyUser->user['product'],
-                        'accessToken' => json_encode($spotifyUser->accessTokenResponseBody),
+                        'token' => $spotifyUser->token,
+                        'refresh_token' => $spotifyUser->refreshToken,
+                        'expires_token' => now()->addSeconds($spotifyUser->expiresIn),
                     ]);
 
                 Auth::login($userDB);
@@ -84,7 +87,7 @@ class AuthProvidersController extends Controller
             return redirect()->route('dashboard');
         } catch (\Exception $e) {
             Log::channel('daily')->error($e);
-            return redirect('/')->with('error', 'Erro ao autenticar com o Spotify. Tente novamente.');;
+            return redirect('/')->with('error', 'Erro ao autenticar com o Spotify. Tente novamente.');
         }
     }
 

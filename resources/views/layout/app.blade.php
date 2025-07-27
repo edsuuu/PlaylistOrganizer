@@ -12,22 +12,12 @@
     @livewireStyles
 </head>
 <body class="bg-container-spotify">
-
-{{--@include('layout.navbar-auth-mobile')--}}
-{{--@livewire('modal')--}}
-{{--<div class="flex flex-col lg:flex-row">--}}
-{{--    @include('layout.navbar-auth-desktop')--}}
-{{--    <main class="flex-1 lg:pl-64">--}}
-{{--        <div class="p-6">--}}
-{{--            {{ $slot }}--}}
-{{--        </div>--}}
-{{--    </main>--}}
-{{--</div>--}}
-
-<main>
-    {{ $slot }}
-</main>
-
+    <div class="flex flex-row w-full bg-container-spotify h-screen overflow-hidden text-white">
+        @livewire('sidebar')
+        <main class="flex-1">
+            {{ $slot }}
+        </main>
+    </div>
 @livewireScripts
 </body>
 </html>

@@ -17,22 +17,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-
-        ]);
-
-        $faker = Faker::create('pt_BR');
-
-
-        User::query()->updateOrCreate([
-            'email' => 'admin@admincentral.com',
-        ], [
-            'name' => $faker->name,
-            'email' => 'admin@admincentral.com',
-            'google_id' => config('app.google_id'),
-            'email_verified_at' => now(),
-            'password' => Hash::make('123'),
-            'cellphone' => $faker->phoneNumber,
-        ]);
+//        $this->call([
+//
+//        ]);
+//
+//        $faker = Faker::create('pt_BR');
+//
+//
+//        User::query()->updateOrCreate([
+//            'email' => 'admin@admincentral.com',
+//        ], [
+//            'name' => $faker->name,
+//            'email' => 'admin@admincentral.com',
+//            'google_id' => config('app.google_id'),
+//            'email_verified_at' => now(),
+//            'password' => Hash::make('123'),
+//            'cellphone' => $faker->phoneNumber,
+//        ]);
     }
 }

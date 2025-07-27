@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('href_profile');
             $table->string('product');
             $table->string('avatar');
-            $table->json('accessToken');
+            $table->text('token');
+            $table->string('refresh_token');
+            $table->dateTime('expires_token');
             $table->string('country');
             $table->timestamps();
         });

@@ -17,6 +17,11 @@
     --color-container-spotify: #121212;
 }
 
+@keyframes loadingLine {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
 body {
     background-color: var(--color-container-spotify);
 }

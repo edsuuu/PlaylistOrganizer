@@ -16,7 +16,6 @@ Route::prefix('oauth2')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::view('dashboard', 'spotify.dashboard')->name('dashboard');
     Route::view('playlist/{id}', 'spotify.view-playlist')->name('edit-playlist');
-
 });
 
 Route::get('image/{path}/{id}', [ImageS3::class, 'handle'])->name('image-s3');

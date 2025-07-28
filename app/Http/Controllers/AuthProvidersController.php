@@ -28,7 +28,6 @@ class AuthProvidersController extends Controller
                 'user-top-read',
                 'user-read-recently-played',
                 'user-read-email',
-                'user-library-modify',
                 'user-library-read',
                 'user-read-private',
             ])

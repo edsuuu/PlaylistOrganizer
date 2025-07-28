@@ -1,4 +1,4 @@
-<div class="w-72 bg-sidebar-spotify flex flex-col border-r border-gray-800">
+<div class="w-72 bg-gradient-to-b from-gray-800 to-sidebar-spotify flex flex-col border-r border-gray-800">
     <div class="p-6 border-b border-gray-800 flex items-center justify-between ">
         <div class="flex items-center gap-3">
             <div class="w-8 h-8 bg-green-spotify rounded-full flex items-center justify-center">
@@ -42,7 +42,7 @@
             {{--                </a>--}}
         </div>
 
-        <div class="mt-4">
+        <div class="mt-4 pb-5">
             <div class="flex items-center justify-between mb-4 px-2">
                 <h3 class="text-gray-400 font-semibold text-sm uppercase tracking-wider">Minhas Playlists</h3>
                 {{--                    <button class="text-gray-400 hover:text-white transition-colors">--}}
@@ -54,7 +54,7 @@
 
             <div class="space-y-2">
                 @foreach($playlists as $playlist)
-                    <a href="{{ route('edit-playlist', ['id' =>  $playlist['id']]) }}" wire:navigate  class="flex items-center gap-3 px-2 py-2 rounded-md bg-gray-800 cursor-pointer" wire:key="{{ $playlist['id'] }}">
+                    <a href="{{ route('edit-playlist', ['id' =>  $playlist['id']]) }}" wire:navigate  class="flex items-center gap-3 px-2 py-2 rounded-md bg-gray-700 cursor-pointer" wire:key="{{ $playlist['id'] }}">
                         <div class="w-10 h-10 bg-green-spotify rounded flex items-center justify-center">
                             @if(isset($playlist['images'][0]['url']))
                                 <img src="{{ $playlist['images'][0]['url'] }}" alt="{{ $playlist['id'] }}" class="object-cover">

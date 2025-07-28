@@ -9,10 +9,12 @@ class Modal extends Component
 {
     public array $components;
     public ?string $activeUuidComponent;
+    public ?string $title;
 
     #[On('OpenModalComponent')]
-    public function openModal(string $component, array $arguments = []): void
+    public function openModal(string $component, array $arguments = [], string $title = 'Modal'): void
     {
+        $this->title = $title;
         $id = md5($component . serialize($arguments));
 
         $this->components[$id] = [

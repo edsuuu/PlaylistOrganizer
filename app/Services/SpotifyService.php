@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\FavoriteTracks;
 use App\Http\Resources\PlaylistResource;
 use App\Http\Resources\TracksListResource;
 use App\Models\UserSpotify;
@@ -51,18 +52,46 @@ class SpotifyService
         return (new TracksListResource($data))->toArray(request());
     }
 
+    public function countTrackInPlaylist(string $playlistId, string $trackId): int
+    {
+        $offset = 0;
+        $limit = 100;
+        $count = 0;
+
+        do {
+            $response = $this->api->get("playlists/{$playlistId}/tracks?offset={$offset}&limit={$limit}");
+            $data = $response->json();
+
+            foreach ($data['items'] as $item) {
+                if (($item['track']['id'] ?? null) === $trackId) {
+                    $count++;
+                }
+            }
+
+            $offset += $limit;
+        } while (!empty($data['next']));
+
+        return $count;
+    }
+
 
     public function getMePlaylist()
     {
-//        "https://api.spotify.com/v1/users/user:id/playlists?offset=0&limit=50", para passar querystring offset e limit
         try {
             $data = $this->api->get('me/playlists')->json();
             return $data['items'];
         } catch (\Exception $e) {
 
         }
-
     }
+
+    public function getFavoriteMusics($offset = 0, $limit = 50)
+    {
+        $data = $this->api->get("me/tracks?limit=$limit&offset=$offset")->json();
+
+        return (new TracksListResource($data))->toArray(request());
+    }
+
 
     private function refreshToken($refreshToken)
     {
@@ -75,6 +104,9 @@ class SpotifyService
                 'refresh_token' => $refreshToken,
                 'client_id' => config('services.spotify.client_id'),
             ]);
+
+            Log::channel('spotify')->info("Refresh token: " . now());
+
             $data = $response->json();
 
             UserSpotify::query()

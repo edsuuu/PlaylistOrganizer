@@ -12,6 +12,7 @@
     @livewireStyles
 </head>
 <body class="bg-container-spotify">
+@livewire('modal')
     <div class="flex flex-row w-full bg-container-spotify h-screen overflow-hidden text-white">
         @livewire('sidebar')
         <main class="flex-1">

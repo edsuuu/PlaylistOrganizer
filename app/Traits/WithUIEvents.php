@@ -13,9 +13,9 @@ trait WithUIEvents
     private const EventOpenModalRight = 'OpenModalComponent';
     private const EventCloseModalRight = 'CloseModalComponent';
 
-    private static function openModalRight(Component $livewireInstance, string $component, array $arguments = []): void
+    private static function openModalRight(Component $livewireInstance, string $component, array $arguments = [], $title = 'Modal'): void
     {
-        $livewireInstance->dispatch(self::EventOpenModalRight, component: $component, arguments: $arguments);
+        $livewireInstance->dispatch(self::EventOpenModalRight, component: $component, arguments: $arguments, title: $title);
     }
 
     private static function closeModalRight(Component $livewireInstance, $events = []): void

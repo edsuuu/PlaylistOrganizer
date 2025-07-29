@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Http\Resources\FavoriteTracks;
 use App\Http\Resources\PlaylistResource;
 use App\Http\Resources\TracksListResource;
 use App\Models\UserSpotify;
@@ -15,10 +14,6 @@ use Illuminate\Support\Facades\Log;
 
 class SpotifyService
 {
-    /**
-     * Create a new class instance.
-     */
-
     private Factory|PendingRequest $api;
     private string $token;
     private int $userId;
@@ -48,7 +43,6 @@ class SpotifyService
     public function getTracksPlaylist($id, $offset = 0, $limit = 100)
     {
         $data = $this->api->get("playlists/$id/tracks?offset=$offset&limit=$limit")->json();
-//        dd($data);
         return (new TracksListResource($data))->toArray(request());
     }
 
@@ -63,7 +57,7 @@ class SpotifyService
             $data = $response->json();
 
             foreach ($data['items'] as $item) {
-                if (($item['track']['id'] ?? null) === $trackId) {
+                if (($item['track']['uri'] ?? null) === $trackId) {
                     $count++;
                 }
             }
@@ -73,7 +67,6 @@ class SpotifyService
 
         return $count;
     }
-
 
     public function getMePlaylist()
     {
@@ -92,6 +85,35 @@ class SpotifyService
         return (new TracksListResource($data))->toArray(request());
     }
 
+    public function addMusicsInPlaylist(string $playlistId, array $tracks)
+    {
+        try {
+
+           $data = $this->api->post("playlists/$playlistId/tracks", [
+                'uris' => $tracks,
+                'position' => 0
+            ]);
+
+           Log::channel('spotify')->info("Add na playlist: " .  json_encode($data->json()));
+        } catch (\Exception $e) {
+            Log::channel('spotify')->info("Erro ao tentar adicionar musicas na playlist" . $e);
+        }
+    }
+
+    public function removeMusicsFromPlaylist(string $playlistId, string $snapshotId, array $tracks)
+    {
+        try {
+            $data = $this->api->delete("playlists/$playlistId/tracks", [
+                'snapshot_id' => $snapshotId,
+                'tracks' => $tracks
+            ]);
+
+            Log::channel('spotify')->info("remove music na playlist: " . json_encode($data->json()));
+
+        }catch (\Exception $e) {
+            Log::channel('spotify')->info("Erro ao tentar removeMusicsFromPlaylist na playlist" . $e);
+        }
+    }
 
     private function refreshToken($refreshToken)
     {

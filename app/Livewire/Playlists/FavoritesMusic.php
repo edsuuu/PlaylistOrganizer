@@ -3,11 +3,14 @@
 namespace App\Livewire\Playlists;
 
 use App\Services\SpotifyService;
+use App\Traits\WithUIEvents;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 
 class FavoritesMusic extends Component
 {
+    use WithUIEvents;
+
     #[Url('id')]
     public string $playlistId;
 
@@ -38,19 +41,32 @@ class FavoritesMusic extends Component
         if ($idTrack) {
             $track = $this->spotify->countTrackInPlaylist($this->playlistId, $idTrack);
 
-            if ($track > 1) {
+            if ($track >= 1) {
                 $this->musicRepetitive = $track;
 
                 $this->dispatch('openmodal');
             } else {
-                dd('add musica a playlist');
+                $this->spotify->addMusicsInPlaylist($this->playlistId, [$idTrack]);
+                $this->dispatch('refreshPlaylist');
+                self::closeModalRight($this, [ 'refreshPlaylistsUser']);
             }
         }
     }
 
     public function addMultiplesMusicToPlaylist()
     {
-        dd($this->selectedTracks);
+        foreach ($this->selectedTracks as $key => $track) {
+            $haveTrackInPlaylist = $this->spotify->countTrackInPlaylist($this->playlistId, $track);
+
+            if ($haveTrackInPlaylist >= 1) {
+                unset($this->selectedTracks[$key]);
+            }
+        }
+        $this->spotify->addMusicsInPlaylist($this->playlistId, array_values($this->selectedTracks));
+
+        $this->dispatch('refreshPlaylist');
+
+        self::closeModalRight($this, ['refreshPlaylistsUser']);
     }
 
     public function toggleTrack($id)
@@ -61,6 +77,7 @@ class FavoritesMusic extends Component
             $this->selectedTracks[] = $id;
         }
     }
+
     public function getFavoriteMusics()
     {
         $this->musics = $this->spotify->getFavoriteMusics();

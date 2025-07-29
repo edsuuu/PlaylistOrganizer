@@ -79,11 +79,11 @@
                    }">
                     <div class="space-y-1">
                         @foreach ($musics['tracks'] as $key => $music)
-                            <label for="music-{{ $music['id'] }}"
+                            <label for="music-{{ $music['uri'] }}"
                                 @class([
                                 'grid grid-cols-12 gap-4 px-2 py-2 rounded-md hover:bg-white/30 hover:bg-opacity-10 transition-colors cursor-pointer',
                                 'bg-white/30' => false
-                        ]) wire:key="{{ $music['id'] }}">
+                        ]) wire:key="{{ $music['uri'] }}">
                                 <div class="col-span-1 flex items-center justify-center">
                                     <span class="text-gray-400">{{ $key + 1 }}</span>
                                 </div>
@@ -108,10 +108,10 @@
                                 </div>
                                 <div class="col-span-2 flex items-center justify-center">
                                     @if ($activeMultipleMusicsToAddPlaylist)
-                                        <input type="checkbox" id="music-{{ $music['id'] }}"
-                                               wire:click="toggleTrack('{{ $music['id'] }}')"
+                                        <input type="checkbox" id="music-{{ $music['uri'] }}"
+                                               wire:click="toggleTrack('{{ $music['uri'] }}')"
                                     @else
-                                        <span wire:click="addSingleMusicToPlaylist('{{ $music['id'] }}')"
+                                        <span wire:click="addSingleMusicToPlaylist('{{ $music['uri'] }}')"
                                               class="border border-green-spotify rounded-lg p-2 text-green-spotify text-[12px] hover:bg-green-spotify hover:text-white transition-all duration-300 cursor-pointer">+ Playlist</span>
                                     @endif
                                 </div>

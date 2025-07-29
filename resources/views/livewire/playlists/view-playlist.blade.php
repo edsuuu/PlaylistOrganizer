@@ -1,4 +1,9 @@
-<div class="bg-gradient-to-b from-gray-800 to-container-spotify">
+<div class="bg-gradient-to-b from-gray-800 to-container-spotify relative">
+    <div wire:loading wire:target="deleteSelectedTracks" class="absolute top-0 left-0 w-full h-full z-10">
+        <div class="w-full h-full rounded-md flex items-center justify-center bg-white/30">
+            <x-heroicon-s-arrow-path class="text-green-spotify w-7 h-7 animate-spin"/>
+        </div>
+    </div>
     <div class="relative">
         <div class="relative flex items-center gap-6 p-6 pb-4">
             <div class="flex-shrink-0">
@@ -28,7 +33,7 @@
     <div class="px-4">
         @if($canEditPlaylist)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-                <div class="add-music-card rounded-xl p-6 cursor-pointer group">
+                <div wire:click="openModalNewMusics" class="add-music-card rounded-xl p-6 cursor-pointer group">
                     <div class="flex items-center gap-4">
                         <div class="relative">
                             <div class="pulse-ring absolute inset-0 rounded-full bg-purple-500 opacity-30"></div>
@@ -84,8 +89,8 @@
                     </div>
                 </div>
 
-
-                <div wire:click="$set('editMusics', true)" class="rounded-xl p-6 cursor-pointer group">
+                <div wire:click="toggleDelete"
+                     class="rounded-xl p-6 cursor-pointer group">
                     <div class="flex items-center gap-4">
                         <div class="relative">
                             <div class="pulse-ring absolute inset-0 rounded-full bg-orange-500 opacity-30"></div>
@@ -143,7 +148,7 @@
 //                                'bg-white/30' => collect($selectedTracks)->contains('id', $track['id']) && collect($selectedTracks)->contains('index', $key)
                                 'bg-white/30' => false
                             ])
-                    wire:key="{{ $track['id'] }}"
+                    wire:key="{{ $track['uri'] }}"
                     >
                         <div class="col-span-1 flex items-center justify-center">
                             @if($editMusics)
@@ -152,13 +157,13 @@
                                             class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md">
                                         Apagar
                                     </button>
-                                    <button wire:click="$set('editMusics', false)"
+                                    <button wire:click="toggleDelete"
                                             class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md">
                                         Cancelar
                                     </button>
                                 </div>
                                 <input type="checkbox" id="editmusics{{$key}}"
-                                       wire:click="toggleTrack('{{ $track['id'] }}', {{ $key }})"
+                                       wire:click="toggleTrack('{{ $track['uri'] }}')"
                             @else
                                 <span class="text-gray-400">{{ $key + 1 }}</span>
                             @endif

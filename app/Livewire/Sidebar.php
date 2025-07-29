@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Services\SpotifyService;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Sidebar extends Component
@@ -11,15 +12,20 @@ class Sidebar extends Component
 
     public array $playlists = [];
 
-    public function mount()
+    public function __construct()
     {
         $this->spotify = new SpotifyService();
+    }
 
+
+    public function mount()
+    {
         $this->getPlaylists();
     }
 
 
-    private function getPlaylists()
+    #[On('refreshPlaylistsUser')]
+    public function getPlaylists(): void
     {
         $this->playlists = $this->spotify->getMePlaylist();
     }

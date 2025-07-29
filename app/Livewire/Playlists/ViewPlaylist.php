@@ -5,6 +5,7 @@ namespace App\Livewire\Playlists;
 use App\Services\SpotifyService;
 use App\Traits\WithUIEvents;
 use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ViewPlaylist extends Component
@@ -30,6 +31,12 @@ class ViewPlaylist extends Component
     public function mount($id)
     {
         $this->playlistId = $id;
+        $this->getPlaylist();
+    }
+
+    #[On('refreshPlaylist')]
+    public function getPlaylist()
+    {
         $this->getInfoPlaylist();
         $this->getTracks();
     }
@@ -46,26 +53,37 @@ class ViewPlaylist extends Component
 
     public function getTracks()
     {
-        $tracks =  $this->spotify->getTracksPlaylist($this->playlistId);
+        $tracks = $this->spotify->getTracksPlaylist($this->playlistId);
         $this->playlistTracks = $tracks;
-
     }
 
-    public function toggleTrack($trackId, $index)
+    public function toggleDelete()
     {
-        if (in_array($trackId, $this->selectedTracks)) {
-            $this->selectedTracks = array_filter($this->selectedTracks, fn($id) => $id !== $trackId);
-        } else {
-            $this->selectedTracks[] = [
-                'id' => $trackId,
-                'index' => $index
-            ];
+        $this->editMusics = !$this->editMusics;
+        $this->selectedTracks = [];
+    }
+
+    public function toggleTrack($trackId)
+    {
+        foreach ($this->selectedTracks as $track) {
+            if ($track['uri'] === $trackId) {
+                return;
+            }
         }
+
+        $this->selectedTracks[] = [
+            'uri' => $trackId
+        ];
     }
 
-    public function deleteSelectedTracks()
+
+    public function deleteSelectedTracks(): void
     {
-        dd($this->selectedTracks);
+        $this->spotify->removeMusicsFromPlaylist($this->playlistInfo['id'], $this->playlistInfo['snapshot_id'], $this->selectedTracks);
+        $this->editMusics = false;
+        $this->selectedTracks = [];
+        $this->getPlaylist();
+        $this->dispatch('refreshPlaylistsUser');
     }
 
 
@@ -95,6 +113,13 @@ class ViewPlaylist extends Component
         $arguments = ['playlistId' => $this->playlistId];
         self::openModalRight($this, FavoritesMusic::class, $arguments, 'Músicas Curtidas');
     }
+
+    public function openModalNewMusics(): void
+    {
+        $arguments = ['playlistId' => $this->playlistId];
+        self::openModalRight($this, NewMusics::class, $arguments, 'Novas músicas');
+    }
+
 
     public function render()
     {

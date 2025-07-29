@@ -74,7 +74,8 @@ class SpotifyService
             $data = $this->api->get('me/playlists')->json();
             return $data['items'];
         } catch (\Exception $e) {
-
+            Log::channel('spotify')->info("Erro ao tentar trazer playlists" . $e);
+            return [];
         }
     }
 

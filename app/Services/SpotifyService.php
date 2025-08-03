@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\PlaylistResource;
+use App\Http\Resources\SearchTracks;
 use App\Http\Resources\TracksListResource;
 use App\Models\UserSpotify;
 use Carbon\Carbon;
@@ -89,16 +90,31 @@ class SpotifyService
     public function addMusicsInPlaylist(string $playlistId, array $tracks)
     {
         try {
-
-           $data = $this->api->post("playlists/$playlistId/tracks", [
+            $data = $this->api->post("playlists/$playlistId/tracks", [
                 'uris' => $tracks,
                 'position' => 0
             ]);
 
-           Log::channel('spotify')->info("Add na playlist: " .  json_encode($data->json()));
+            Log::channel('spotify')->info("Add na playlist: " . json_encode($data->json()));
         } catch (\Exception $e) {
             Log::channel('spotify')->info("Erro ao tentar adicionar musicas na playlist" . $e);
         }
+    }
+
+    public function searchMusics($search, $type = 'track', $limit = 50, $offset = 0)
+    {
+        $queryParams = [
+            'q' => $search,
+            'type' => $type,
+            'limit' => $limit,
+            'offset' => $offset,
+        ];
+
+        $url = 'search?' . http_build_query($queryParams);
+
+        $data = $this->api->get($url)->json();
+
+        return (new SearchTracks($data))->toArray(request());
     }
 
     public function removeMusicsFromPlaylist(string $playlistId, string $snapshotId, array $tracks)
@@ -111,9 +127,19 @@ class SpotifyService
 
             Log::channel('spotify')->info("remove music na playlist: " . json_encode($data->json()));
 
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             Log::channel('spotify')->info("Erro ao tentar removeMusicsFromPlaylist na playlist" . $e);
         }
+    }
+
+    public function createPlaylist($spotifyId, $name)
+    {
+        $data = $this->api->post("users/$spotifyId/playlists", [
+            'name' => $name,
+            'description' => 'Playlist criada pelo PlaylistOrganizer',
+        ]);
+
+        return $data->json()['id'];
     }
 
     private function refreshToken($refreshToken)

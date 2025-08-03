@@ -33,7 +33,7 @@
     <div class="px-4">
         @if($canEditPlaylist)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-                <div wire:click="openModalNewMusics" class="add-music-card rounded-xl p-6 cursor-pointer group">
+                <a href="{{ route('new-musics-playlist', ['id' => $playlistId]) }}" wire:navigate class="add-music-card rounded-xl p-6 cursor-pointer group">
                     <div class="flex items-center gap-4">
                         <div class="relative">
                             <div class="pulse-ring absolute inset-0 rounded-full bg-purple-500 opacity-30"></div>
@@ -59,7 +59,7 @@
                             </svg>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <div wire:click="openModalFavoriteMusics" class="liked-music-card rounded-xl p-6 cursor-pointer group">
                     <div class="flex items-center gap-4">

@@ -4,8 +4,6 @@ use App\Http\Controllers\AuthProvidersController;
 use App\Services\ImageS3;
 use Illuminate\Support\Facades\Route;
 
-
-Route::view('/', 'spotify.home-page')->name('home');
 Route::view('/', 'spotify.home-page')->name('login');
 
 Route::prefix('oauth2')->group(function () {
@@ -16,6 +14,7 @@ Route::prefix('oauth2')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::view('dashboard', 'spotify.dashboard')->name('dashboard');
     Route::view('playlist/{id}', 'spotify.view-playlist')->name('edit-playlist');
+    Route::view('playlist/{id}/novas-musicas', 'spotify.new-musics-playlist')->name('new-musics-playlist');
 });
 
 Route::get('image/{path}/{id}', [ImageS3::class, 'handle'])->name('image-s3');

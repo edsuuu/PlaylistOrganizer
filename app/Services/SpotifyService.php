@@ -33,40 +33,53 @@ class SpotifyService
         ])->baseUrl(config('services.spotify.url'));
     }
 
-
     public function getInfoPlaylist($id)
     {
-        $data = $this->api->get("playlists/$id?fields=id,name,public,collaborative,owner(display_name,id),images,uri,snapshot_id,tracks(total)")->json();
-
-        return (new PlaylistResource($data))->toArray(request());
+        try {
+            $data = $this->api->get("playlists/$id?fields=id,name,public,collaborative,owner(display_name,id),images,uri,snapshot_id,tracks(total)")->json();
+            return (new PlaylistResource($data))->toArray(request());
+        } catch (\Exception $e) {
+            Log::channel('spotify')->info("Erro ao tentar obter informações da playlist: " . $e);
+            return [];
+        }
     }
 
     public function getTracksPlaylist($id, $offset = 0, $limit = 100)
     {
-        $data = $this->api->get("playlists/$id/tracks?offset=$offset&limit=$limit")->json();
-        return (new TracksListResource($data))->toArray(request());
+        try {
+            $data = $this->api->get("playlists/$id/tracks?offset=$offset&limit=$limit")->json();
+            return (new TracksListResource($data))->toArray(request());
+        } catch (\Exception $e) {
+            Log::channel('spotify')->info("Erro ao tentar obter tracks da playlist: " . $e);
+            return [];
+        }
     }
 
     public function countTrackInPlaylist(string $playlistId, string $trackId): int
     {
-        $offset = 0;
-        $limit = 100;
-        $count = 0;
+        try {
+            $offset = 0;
+            $limit = 100;
+            $count = 0;
 
-        do {
-            $response = $this->api->get("playlists/{$playlistId}/tracks?offset={$offset}&limit={$limit}");
-            $data = $response->json();
+            do {
+                $response = $this->api->get("playlists/{$playlistId}/tracks?offset={$offset}&limit={$limit}");
+                $data = $response->json();
 
-            foreach ($data['items'] as $item) {
-                if (($item['track']['uri'] ?? null) === $trackId) {
-                    $count++;
+                foreach ($data['items'] as $item) {
+                    if (($item['track']['uri'] ?? null) === $trackId) {
+                        $count++;
+                    }
                 }
-            }
 
-            $offset += $limit;
-        } while (!empty($data['next']));
+                $offset += $limit;
+            } while (!empty($data['next']));
 
-        return $count;
+            return $count;
+        } catch (\Exception $e) {
+            Log::channel('spotify')->info("Erro ao contar tracks na playlist: " . $e);
+            return false;
+        }
     }
 
     public function getMePlaylist()
@@ -82,9 +95,13 @@ class SpotifyService
 
     public function getFavoriteMusics($offset = 0, $limit = 50)
     {
-        $data = $this->api->get("me/tracks?limit=$limit&offset=$offset")->json();
-
-        return (new TracksListResource($data))->toArray(request());
+        try {
+            $data = $this->api->get("me/tracks?limit=$limit&offset=$offset")->json();
+            return (new TracksListResource($data))->toArray(request());
+        } catch (\Exception $e) {
+            Log::channel('spotify')->info("Erro ao obter músicas favoritas: " . $e);
+            return [];
+        }
     }
 
     public function addMusicsInPlaylist(string $playlistId, array $tracks)
@@ -103,18 +120,23 @@ class SpotifyService
 
     public function searchMusics($search, $type = 'track', $limit = 50, $offset = 0)
     {
-        $queryParams = [
-            'q' => $search,
-            'type' => $type,
-            'limit' => $limit,
-            'offset' => $offset,
-        ];
+        try {
+            $queryParams = [
+                'q' => $search,
+                'type' => $type,
+                'limit' => $limit,
+                'offset' => $offset,
+            ];
 
-        $url = 'search?' . http_build_query($queryParams);
+            $url = 'search?' . http_build_query($queryParams);
 
-        $data = $this->api->get($url)->json();
+            $data = $this->api->get($url)->json();
 
-        return (new SearchTracks($data))->toArray(request());
+            return (new SearchTracks($data))->toArray(request());
+        } catch (\Exception $e) {
+            Log::channel('spotify')->info("Erro ao pesquisar músicas: " . $e);
+            return [];
+        }
     }
 
     public function removeMusicsFromPlaylist(string $playlistId, string $snapshotId, array $tracks)
@@ -134,12 +156,17 @@ class SpotifyService
 
     public function createPlaylist($spotifyId, $name)
     {
-        $data = $this->api->post("users/$spotifyId/playlists", [
-            'name' => $name,
-            'description' => 'Playlist criada pelo PlaylistOrganizer',
-        ]);
+        try {
+            $data = $this->api->post("users/$spotifyId/playlists", [
+                'name' => $name,
+                'description' => 'Playlist criada pelo PlaylistOrganizer',
+            ]);
 
-        return $data->json()['id'];
+            return $data->json()['id'];
+        } catch (\Exception $e) {
+            Log::channel('spotify')->info("Erro ao criar playlist: " . $e);
+            return false;
+        }
     }
 
     private function refreshToken($refreshToken)

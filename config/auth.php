@@ -112,4 +112,5 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    'emailsLogViewer' => explode(',', env('AUTH_EMAILS_LOG_VIEWER', '')),
 ];

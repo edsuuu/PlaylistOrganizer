@@ -22,7 +22,7 @@
             </div>
 
             <div class="flex-1 min-w-0">
-                <h1 class="text-5xl font-black text-white mb-4 truncate">{{ $this->playlistInfo['name'] }}</h1>
+                <h1 class="text-3xl font-black text-white mb-4">{{ $this->playlistInfo['name'] }}</h1>
                 <div class="flex items-center gap-2 text-sm text-gray-300">
                     <span> {{ $this->playlistInfo['tracks_total'] ?? 0 }} músicas - {{ $this->playlistInfo['owner_name'] ?? '' }}</span>
                 </div>

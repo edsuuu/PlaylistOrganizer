@@ -6,6 +6,7 @@ use App\Livewire\Actions\Logout;
 use App\Models\User;
 use App\Models\UserSpotify;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -41,6 +42,8 @@ class AuthProvidersController extends Controller
                 ->stateless()
                 ->user();
 
+            DB::beginTransaction();
+
             $userDB = User::query()
                 ->with('spotify')
                 ->where('email', $spotifyUser->user['email'])
@@ -61,7 +64,7 @@ class AuthProvidersController extends Controller
                     'external_urls' => $spotifyUser->user['external_urls']['spotify'],
                     'href_profile' => $spotifyUser->user['href'],
                     'product' => $spotifyUser->user['product'],
-                    'avatar' => $spotifyUser->user['images'][0]['url'],
+                    'avatar' => !empty($spotifyUser->user['images']) ? $spotifyUser->user['images'][0]['url'] : null,
                     'token' => $spotifyUser->token,
                     'refresh_token' => $spotifyUser->refreshToken,
                     'expires_token' => now()->addSeconds($spotifyUser->expiresIn),
@@ -73,7 +76,7 @@ class AuthProvidersController extends Controller
                 UserSpotify::query()
                     ->where('user_id', $userDB->id)
                     ->update([
-                        'avatar' => $spotifyUser->user['images'][0]['url'],
+                        'avatar' =>  !empty($spotifyUser->user['images']) ? $spotifyUser->user['images'][0]['url'] : null,
                         'product' => $spotifyUser->user['product'],
                         'token' => $spotifyUser->token,
                         'refresh_token' => $spotifyUser->refreshToken,
@@ -82,9 +85,12 @@ class AuthProvidersController extends Controller
 
                 Auth::login($userDB);
             }
+
+            DB::commit();
             session()->regenerate();
             return redirect()->route('dashboard');
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::channel('daily')->error($e);
             return redirect('/')->with('error', 'Erro ao autenticar com o Spotify. Tente novamente.');
         }

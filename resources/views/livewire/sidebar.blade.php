@@ -55,7 +55,7 @@
             <div class="space-y-2">
                 @foreach($playlists as $playlist)
                     <a href="{{ route('edit-playlist', ['id' =>  $playlist['id']]) }}" wire:navigate  class="flex items-center gap-3 px-2 py-2 rounded-md bg-gray-700 cursor-pointer" wire:key="{{ $playlist['id'] }}">
-                        <div class="w-10 h-10 bg-green-spotify rounded flex items-center justify-center">
+                        <div class="flex-shrink-0 w-10 h-10 bg-green-spotify rounded flex items-center justify-center">
                             @if(isset($playlist['images'][0]['url']))
                                 <img src="{{ $playlist['images'][0]['url'] }}" alt="{{ $playlist['id'] }}" class="object-cover">
                             @else
@@ -65,7 +65,7 @@
                             @endif
                         </div>
                         <div>
-                            <p class="text-white font-medium text-sm">{{ $playlist['name'] }}</p>
+                            <p class="text-white font-medium text-sm w-full">{{ $playlist['name'] }}</p>
                             <p class="text-gray-400 text-sm">{{ $playlist['tracks']['total'] }} músicas</p>
                         </div>
                     </a>

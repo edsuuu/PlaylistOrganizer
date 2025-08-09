@@ -21,9 +21,8 @@ class AuthServiceLogViewerProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
-
         Gate::define('viewLogViewer', function (?User $user) {
-            return true;
+            return !is_null($user) && in_array($user->email, config('auth.emailsLogViewer'), true);
         });
     }
 }

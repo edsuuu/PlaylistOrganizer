@@ -31,8 +31,6 @@ class NewMusics extends Component
     {
         $this->playlistId = $id;
         $this->playlistInfo = $this->spotify->getInfoPlaylist($this->playlistId);
-
-
     }
 
     public function updatedSearch()

@@ -47,12 +47,12 @@
 
         <div class="flex items-center gap-10 ">
             <div class="flex gap-4 items-center">
-                <div class="flex-shrink-0">
-                    @if(isset($this->playlistInfo['image']))
-                        <img src="{{ $this->playlistInfo['image'] }}" alt="image-playlist"
-                             class="w-12 h-12 rounded-lg shadow-2xl flex items-center justify-center object-cover">
-                    @endif
-                </div>
+                @isset($this->playlistInfo['image'])
+                    <div class="flex-shrink-0">
+                            <img src="{{ $this->playlistInfo['image'] }}" alt="image-playlist"
+                                 class="w-12 h-12 rounded-lg shadow-2xl flex items-center justify-center object-cover">
+                    </div>
+                @endisset
 
                 <div class="flex-1 min-w-0">
                     <h1 class="text-xl font-black text-white">{{ $this->playlistInfo['name'] }}</h1>
@@ -60,42 +60,51 @@
             </div>
         </div>
 
+            <div class="w-full flex flex-col md:flex-row gap-4 mt-4">
+                @if(!$favoriteMusic)
+                    <input type="text"
+                           wire:model.live.debounce.300ms="search"
+                           class="w-full py-2 pl-4 border border-green-spotify rounded-lg text-white placeholder-gray-400 outline-none focus:border-green-spotify"
+                           placeholder="Pesquisar música, artista ou álbum...">
+                @endif
 
-        <div class="w-full flex flex-col md:flex-row gap-4 mt-4">
-            <input type="text"
-                   wire:model.live.debounce.300ms="search"
-                   class="w-full py-2 pl-4 border border-green-spotify rounded-lg text-white placeholder-gray-400 outline-none focus:border-green-spotify"
-                   placeholder="Pesquisar música, artista ou álbum...">
+                <div class="flex flex-col md:flex-row gap-4 flex-shrink-0">
+                    @if(!$favoriteMusic)
+                        {{-- todo: lembrar de incluir o input de pesquisa para musicas favoritas                        --}}
 
-            <div class="flex flex-col md:flex-row gap-4 flex-shrink-0">
-                <button wire:click="clearSearch"
-                        class="flex items-center p-1 gap-3 cursor-pointer rounded-lg transition-all duration-300 whitespace-nowrap hover:bg-green-spotify/30">
-                    <div
-                        class="flex-shrink-0 w-7 h-7 bg-green-spotify/20 rounded-full flex items-center justify-center">
-                        <x-heroicon-s-x-mark class="w-5 h-5 text-green-spotify"/>
-                    </div>
-                    <div class="text-left">
-                        <h3 class="text-white font-medium">Limpar pesquisa</h3>
-                    </div>
-                </button>
-                <button wire:click="activeMultipleMusics"
-                        class="flex items-center p-1 gap-3 cursor-pointer rounded-lg transition-all duration-300 whitespace-nowrap hover:bg-green-spotify/30">
-                    <div
-                        class="flex-shrink-0 w-7 h-7 bg-green-spotify/20 rounded-full flex items-center justify-center">
-                        <x-heroicon-s-plus class="w-5 h-5 text-green-spotify"/>
-                    </div>
-                    <div class="text-left">
-                        <h3 class="text-white font-medium">{{ $activeMultipleMusicsToAddPlaylist ? 'Desativar' : 'Ativar' }}
-                            Múltiplas Músicas</h3>
-                        <p class="text-gray-400 text-sm max-md:hidden">Adicionar várias músicas de uma vez</p>
-                    </div>
-                </button>
+                        <button wire:click="clearSearch"
+                                class="flex items-center p-1 gap-3 cursor-pointer rounded-lg transition-all duration-300 whitespace-nowrap hover:bg-green-spotify/30">
+                            <div
+                                class="flex-shrink-0 w-7 h-7 bg-green-spotify/20 rounded-full flex items-center justify-center">
+                                <x-heroicon-s-x-mark class="w-5 h-5 text-green-spotify"/>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="text-white font-medium">Limpar pesquisa</h3>
+                            </div>
+                        </button>
+                    @endif
+                    <button wire:click="activeMultipleMusics"
+                            class="flex items-center p-1 gap-3 cursor-pointer rounded-lg transition-all duration-300 whitespace-nowrap hover:bg-green-spotify/30">
+                        <div
+                            class="flex-shrink-0 w-7 h-7 bg-green-spotify/20 rounded-full flex items-center justify-center">
+                            <x-heroicon-s-plus class="w-5 h-5 text-green-spotify"/>
+                        </div>
+                        <div class="text-left">
+                            <h3 class="text-white font-medium">{{ $activeMultipleMusicsToAddPlaylist ? 'Desativar' : 'Ativar' }}
+                                Múltiplas escolha de músicas</h3>
+                            <p class="text-gray-400 text-sm max-md:hidden">Adicionar várias músicas de uma vez</p>
+                        </div>
+                    </button>
+                </div>
             </div>
-        </div>
     </div>
 
     @isset($this->playlistTracks['tracks'])
         <div class="rounded-2xl bg-gradient-to-b from-gray-800 to-container-spotify relative p-4 mt-6 ">
+            @if($favoriteMusic)
+                <h1 class="ml-2 my-2 text-gray-400">Músicas curtidas</h1>
+            @endif
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($this->playlistTracks['tracks'] as $key => $track)
                     <div wire:key="{{ $track['uri'] }}"

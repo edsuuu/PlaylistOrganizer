@@ -3,33 +3,33 @@
 namespace App\Livewire\Playlists;
 
 use App\Services\SpotifyService;
-use App\Traits\WithUIEvents;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ViewPlaylist extends Component
 {
-    use WithUIEvents;
-
     private SpotifyService $spotify;
 
     #[Locked]
-    public string $playlistId;
+    public string|null $playlistId;
 
     public array $playlistInfo = [];
     public array $playlistTracks = [];
     public bool $canEditPlaylist = false;
     public bool $editMusics = false;
     public array $selectedTracks = [];
+    public bool $favoritePlaylist = false;
 
     public function __construct()
     {
         $this->spotify = new SpotifyService();
     }
 
-    public function mount($id): void
+    public function mount($id = null, $favoritePlaylist = false): void
     {
+        $this->favoritePlaylist = $favoritePlaylist;
+
         $this->playlistId = $id;
         $this->getPlaylist();
     }
@@ -37,8 +37,18 @@ class ViewPlaylist extends Component
     #[On('refreshPlaylist')]
     public function getPlaylist(): void
     {
-        $this->getInfoPlaylist();
-        $this->getTracks();
+        if ($this->favoritePlaylist) {
+            $this->getFavoriteMusics();
+        } else {
+            $this->getInfoPlaylist();
+            $this->getTracks();
+        }
+    }
+
+
+    public function getFavoriteMusics()
+    {
+        $this->playlistTracks = $this->spotify->getFavoriteMusics();
     }
 
     public function getInfoPlaylist(): void
@@ -105,9 +115,16 @@ class ViewPlaylist extends Component
         }
 
         $remaining = $total - $offset;
-        $limit = min(100, $remaining);
 
-        $moreMusics = $this->spotify->getTracksPlaylist($this->playlistId, $offset, $limit);
+        $min = $this->favoritePlaylist ? 50 : 100;
+
+        $limit = min($min, $remaining);
+
+        if ($this->favoritePlaylist) {
+            $moreMusics = $this->spotify->getFavoriteMusics($offset, $limit);
+        } else {
+            $moreMusics = $this->spotify->getTracksPlaylist($this->playlistId, $offset, $limit);
+        }
 
         $this->playlistTracks['tracks'] = array_merge($this->playlistTracks['tracks'], $moreMusics['tracks']);
         $this->playlistTracks['offset'] = $moreMusics['offset'];
@@ -115,19 +132,6 @@ class ViewPlaylist extends Component
         $this->playlistTracks['limit'] = $moreMusics['limit'];
         $this->playlistTracks['total'] = $moreMusics['total'];
     }
-
-    public function openModalFavoriteMusics(): void
-    {
-        $arguments = ['playlistId' => $this->playlistId];
-        self::openModalRight($this, FavoritesMusic::class, $arguments, 'Músicas Curtidas');
-    }
-
-    public function openModalNewMusics(): void
-    {
-        $arguments = ['playlistId' => $this->playlistId];
-        self::openModalRight($this, NewMusics::class, $arguments, 'Novas músicas');
-    }
-
 
     public function render()
     {

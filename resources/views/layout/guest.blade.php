@@ -15,7 +15,6 @@
     @fluxAppearance
 </head>
 <body class="bg-container-spotify">
-@livewire('modal')
 <flux:header container class="bg-container-spotify  border-b border-zinc-700">
     {{--    <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />--}}
 
@@ -39,7 +38,7 @@
 
         <flux:menu>
             @auth
-                <flux:menu.item icon="arrow-right-start-on-rectangle" class="cursor-pointer">Playlists</flux:menu.item>
+                <flux:menu.item :href="route('dashboard')" wire:navigate icon="musical-note" class="cursor-pointer">Dashboard</flux:menu.item>
                 <flux:menu.separator />
 
                 <form method="POST" action="{{ route('logout') }}">

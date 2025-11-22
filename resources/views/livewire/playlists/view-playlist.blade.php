@@ -14,7 +14,7 @@
                 @else
                     <div
                         class="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg shadow-2xl flex items-center justify-center">
-                        <svg class="w-15 h-15 text-white opacity-80" fill="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-32 h-32 text-white opacity-80" fill="currentColor" viewBox="0 0 24 24">
                             <path
                                 d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
                         </svg>
@@ -23,9 +23,13 @@
             </div>
 
             <div class="flex-1">
-                <h1 class="text-xl md:text-3xl font-black text-white mb-4">{{ $this->playlistInfo['name'] }}</h1>
+                <h1 class="text-xl md:text-3xl font-black text-white mb-4">{{ $this->playlistInfo['name'] ?? 'Músicas curtidas' }}</h1>
                 <div class="flex items-center gap-2 text-sm text-gray-300">
-                    <span class="break-words"> {{ $this->playlistInfo['tracks_total'] ?? 0 }} músicas - {{ $this->playlistInfo['owner_name'] ?? '' }}</span>
+                    @if($favoritePlaylist)
+                        <span class="break-words"> {{ $this->playlistTracks['total'] ?? 0 }} músicas - {{ auth()->user()->name }}</span>
+                    @else
+                        <span class="break-words"> {{ $this->playlistInfo['tracks_total'] ?? 0 }} músicas - {{ $this->playlistInfo['owner_name'] ?? '' }}</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -36,7 +40,7 @@
 
                     <div x-data="{ open: false }" class="add-music-card rounded-xl p-6 cursor-pointer group relative border border-gray-700/50">
 
-                        <button @click="open = !open" class="flex items-center gap-4 w-full text-left">
+                        <button @click="open = !open" class="flex items-center gap-4 w-full text-left cursor-pointer">
                             <div class="flex-1">
                                 <h3 class="select-none text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
                                     Adicionar Músicas
@@ -62,8 +66,7 @@
                             class="absolute left-0 mt-3 w-full md:w-64 bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl p-2 z-20 space-y-1"
                         >
 
-                            <a href="{{ route('new-musics-playlist', ['id' => $playlistId]) }}"
-                               wire:navigate
+                            <a href="{{ route('new-musics-playlist', ['id' => $playlistId]) }}" wire:navigate
                                class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-neutral-800 transition cursor-pointer group">
 
                                 <svg class="w-5 h-5 text-purple-300 opacity-80 group-hover:opacity-100"
@@ -76,8 +79,7 @@
                             </a>
 
 
-                            <button
-                                wire:click="openModalFavoriteMusics"
+                            <a href="{{ route('liked-musics-playlist', ['id' => $playlistId]) }}" wire:navigate
                                 class="flex items-center gap-3 px-4 py-3 rounded-lg w-full text-left hover:bg-neutral-800 transition cursor-pointer group">
 
                                 <svg class="w-5 h-5 text-green-300 opacity-80 group-hover:opacity-100"
@@ -87,7 +89,7 @@
                                 </svg>
 
                                 <span class="text-sm text-gray-300 group-hover:text-white">Músicas curtidas</span>
-                            </button>
+                            </a>
 
                         </div>
                     </div>

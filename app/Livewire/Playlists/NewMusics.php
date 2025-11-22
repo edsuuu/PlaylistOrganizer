@@ -22,16 +22,29 @@ class NewMusics extends Component
     public array $selectedTracks = [];
     public int $musicRepetitive = 0;
 
+    public $favoriteMusic = false;
+
     public function __construct()
     {
         $this->spotify = new SpotifyService();
     }
 
-    public function mount($id)
+    public function mount($id, $favoritesMusic = false)
     {
         $this->playlistId = $id;
         $this->playlistInfo = $this->spotify->getInfoPlaylist($this->playlistId);
+        $this->favoriteMusic = $favoritesMusic;
+
+        if ($favoritesMusic) {
+            $this->getFavoriteMusics();
+        }
     }
+
+    public function getFavoriteMusics()
+    {
+        $this->playlistTracks = $this->spotify->getFavoriteMusics();
+    }
+
 
     public function updatedSearch()
     {
@@ -112,7 +125,7 @@ class NewMusics extends Component
 
     public function loadMore()
     {
-        if (empty(trim($this->search))) {
+        if (!$this->favoriteMusic && empty(trim($this->search))) {
             return;
         }
 
@@ -126,7 +139,11 @@ class NewMusics extends Component
         $remaining = $total - $offset;
         $limit = min(50, $remaining);
 
-        $moreMusics = $this->spotify->searchMusics($this->search, 'track', 50, $limit);
+        if ($this->favoriteMusic) {
+            $moreMusics = $this->spotify->getFavoriteMusics($offset, $limit);
+        } else {
+            $moreMusics = $this->spotify->searchMusics($this->search, 'track', 50, $limit);
+        }
 
         $this->playlistTracks['tracks'] = array_merge($this->playlistTracks['tracks'], $moreMusics['tracks']);
         $this->playlistTracks['offset'] = $moreMusics['offset'];

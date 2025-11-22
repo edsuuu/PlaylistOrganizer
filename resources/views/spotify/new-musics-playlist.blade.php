@@ -1,3 +1,5 @@
 <x-app-layout>
-    <livewire:playlists.new-musics :id="request()->route('id')"/>
+    <flux:main>
+        <livewire:playlists.new-musics :id="request()->route('id')"/>
+    </flux:main>
 </x-app-layout>

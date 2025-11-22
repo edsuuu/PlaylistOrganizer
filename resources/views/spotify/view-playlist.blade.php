@@ -1,3 +1,5 @@
 <x-app-layout>
-    <livewire:playlists.view-playlist :id="request()->route('id')"/>
+    <flux:main class="cst-scrollbar">
+        <livewire:playlists.view-playlist :id="request()->route('id')"/>
+    </flux:main>
 </x-app-layout>

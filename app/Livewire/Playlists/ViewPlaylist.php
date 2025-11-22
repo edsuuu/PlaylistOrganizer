@@ -28,20 +28,20 @@ class ViewPlaylist extends Component
         $this->spotify = new SpotifyService();
     }
 
-    public function mount($id)
+    public function mount($id): void
     {
         $this->playlistId = $id;
         $this->getPlaylist();
     }
 
     #[On('refreshPlaylist')]
-    public function getPlaylist()
+    public function getPlaylist(): void
     {
         $this->getInfoPlaylist();
         $this->getTracks();
     }
 
-    public function getInfoPlaylist()
+    public function getInfoPlaylist(): void
     {
         $this->playlistInfo = $this->spotify->getInfoPlaylist($this->playlistId);
         if (isset($this->playlistInfo)) {
@@ -51,19 +51,19 @@ class ViewPlaylist extends Component
         }
     }
 
-    public function getTracks()
+    public function getTracks(): void
     {
         $tracks = $this->spotify->getTracksPlaylist($this->playlistId);
         $this->playlistTracks = $tracks;
     }
 
-    public function toggleDelete()
+    public function toggleDelete(): void
     {
         $this->editMusics = !$this->editMusics;
         $this->selectedTracks = [];
     }
 
-    public function toggleTrack($trackId)
+    public function toggleTrack($trackId): void
     {
         foreach ($this->selectedTracks as $track) {
             if ($track['uri'] === $trackId) {
@@ -76,6 +76,14 @@ class ViewPlaylist extends Component
         ];
     }
 
+    public function deleteSingleTrack(string $uri): void
+    {
+        $this->selectedTracks[] = [
+            'uri' => $uri
+        ];
+
+        $this->deleteSelectedTracks();
+    }
 
     public function deleteSelectedTracks(): void
     {
@@ -87,7 +95,7 @@ class ViewPlaylist extends Component
     }
 
 
-    public function loadMore()
+    public function loadMore(): void
     {
         $offset = count($this->playlistTracks['tracks']);
         $total = $this->playlistTracks['total'];

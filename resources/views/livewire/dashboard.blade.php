@@ -1,10 +1,8 @@
-<div class="flex-1 flex flex-col min-w-0">
-    <div class="bg-gradient-to-b from-gray-800 to-container-spotify p-6 border-b border-gray-800">
-        <div class="flex items-center justify-between">
-            <div class="mt-6">
-                <h1 class="text-3xl font-bold text-white mb-2">Organizador de Playlists</h1>
-                <p class="text-gray-300">Organize e crie suas playlist muito mais rapido</p>
-            </div>
+<div class="rounded-2xl flex-1 flex flex-col min-w-0 bg-gradient-to-b from-gray-800 to-container-spotify p-6 border-b border-gray-800">
+    <div class="flex items-center justify-between">
+        <div class="mt-6">
+            <h1 class="text-3xl font-bold text-white mb-2">Organizador de Playlists</h1>
+            <p class="text-gray-300">Organize e crie suas playlist muito mais rapido</p>
         </div>
     </div>
 

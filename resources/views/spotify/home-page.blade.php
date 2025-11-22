@@ -1,3 +1,3 @@
 <x-guest-layout>
-  <livewire:home-page />
+    <livewire:home-page />
 </x-guest-layout>

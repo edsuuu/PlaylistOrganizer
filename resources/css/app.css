@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import 'tailwindcss';
-
+@import '../../vendor/livewire/flux/dist/flux.css';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -26,33 +26,23 @@ body {
     background-color: var(--color-container-spotify);
 }
 
-.cst-scrollbar::-webkit-scrollbar {
+* {
+
+}
+
+*::-webkit-scrollbar {
     width: 5px;
 }
 
-.cst-scrollbar::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
     background-color: var(--color-green-spotify);
     opacity: 10;
     border-radius: 10px;
 }
 
-.cst-scrollbar::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
     background: var(--color-sidebar-spotify);
 }
-
-.cst-scrollbar-body::-webkit-scrollbar {
-    width: 6px;
-}
-
-.cst-scrollbar-body::-webkit-scrollbar-thumb {
-    background-color: var(--color-green-spotify);
-    opacity: 10;
-}
-
-.cst-scrollbar-body::-webkit-scrollbar-track {
-    background: #0e0e19;
-}
-
 
 .spinner {
     -webkit-animation: rotator 1.4s linear infinite;

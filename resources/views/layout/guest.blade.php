@@ -20,12 +20,14 @@
 
     {{--    <flux:brand href="#" logo="https://fluxui.dev/img/demo/dark-mode-logo.png" name="{{ config('app.name') }}" class="max-lg:hidden" />--}}
 
-    <flux:brand href="#" logo="https://fluxui.dev/img/demo/dark-mode-logo.png" name="{{ config('app.name') }}" />
 
-    <flux:navbar class="-mb-px max-lg:hidden">
-        <flux:navbar.item icon="home" href="#" current>Home</flux:navbar.item>
-        <flux:navbar.item icon="home" href="#" current>Politica de privacidade</flux:navbar.item>
-    </flux:navbar>
+    <a href="{{ route('login') }}" class="ms-2 me-5 flex items-center space-x-2 rtl:space-x-reverse lg:ms-0" wire:navigate>
+        <x-app-logo :name="config('app.name')"/>
+    </a>
+{{--    <flux:navbar class="-mb-px max-lg:hidden">--}}
+{{--        <flux:navbar.item icon="home" href="#" current>Home</flux:navbar.item>--}}
+{{--        <flux:navbar.item icon="home" href="#" current>Politica de privacidade</flux:navbar.item>--}}
+{{--    </flux:navbar>--}}
 
     <flux:spacer />
 

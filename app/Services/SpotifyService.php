@@ -169,7 +169,15 @@ class SpotifyService
         }
     }
 
-    private function refreshToken($refreshToken)
+
+    public function getPlaybackState()
+    {
+        $data = $this->api->get("/me/player");
+//dd($data->json()['item']);
+       return $data->json();
+    }
+
+    private function refreshToken($refreshToken): void
     {
         try {
             $response = Http::withHeaders([
@@ -179,21 +187,19 @@ class SpotifyService
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $refreshToken,
                 'client_id' => config('services.spotify.client_id'),
-            ]);
+            ])->json();
 
             Log::channel('spotify')->info("Refresh token: " . now());
-
-            $data = $response->json();
 
             UserSpotify::query()
                 ->where('user_id', $this->userId)
                 ->update([
-                    'token' => $data['access_token'],
-                    'refresh_token' => $data['refresh_token'] ?? $refreshToken,
-                    'expires_token' => now()->addSeconds($data['expires_in']),
+                    'token' => $response['access_token'],
+                    'refresh_token' => $response['refresh_token'] ?? $refreshToken,
+                    'expires_token' => now()->addSeconds($response['expires_in']),
                 ]);
 
-            $this->token = $data['access_token'];
+            $this->token = $response['access_token'];
         } catch (\Exception $e) {
             Log::channel('spotify')->info($e);
         }

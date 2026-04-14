@@ -18,14 +18,20 @@ class TrackResource extends JsonResource
         return [
             'id' => $this['track']['id'] ?? null,
             'name' => $this['track']['name'] ?? null,
-            'duration_ms' => $this->formatDuration($this['track']['duration_ms'] ?? 0),
+            'duration_ms' => $this['track']['duration_ms'] ?? 0,
+            'artist' => $this['track']['artists'][0]['name'] ?? null,
+            'album' => $this['track']['album']['name'] ?? null,
+            'image' => $this['track']['album']['images'][0]['url'] ?? null,
+            'preview_url' => $this['track']['preview_url'] ?? null, // Added missing preview_url
+            'added_at' => $this['added_at'] ?? null,
+            'added_at_formatted' => $this->formatAddedAt($this['added_at'] ?? null),
+            'uri' => $this['track']['uri'] ?? null,
+            
+            // Compatibility / Deprecated aliases
             'artists_name' => $this['track']['artists'][0]['name'] ?? null,
-            'album_id' => $this['track']['album']['id'] ?? null,
             'album_name' => $this['track']['album']['name'] ?? null,
             'album_image' => $this['track']['album']['images'][0]['url'] ?? null,
             'added_at_formated' => $this->formatAddedAt($this['added_at'] ?? null),
-            'added_at' => $this['added_at'] ?? null,
-            'uri' => $this['track']['uri'] ?? null,
         ];
     }
 

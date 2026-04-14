@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Livewire\Actions\Logout;
 use App\Models\User;
 use App\Models\UserSpotify;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -54,7 +58,7 @@ class AuthProvidersController extends Controller
                 $userCreate = User::query()->create([
                     'name' => $spotifyUser->user['display_name'],
                     'email' =>  $spotifyUser->user['email'],
-                    'email_verified_at' => now(),
+                    'email_verified_at' => Carbon::now(),
                     'password' => Hash::make(Str::random(16)),
                     'spotify_id' => $spotifyUser->user['id'],
                 ]);
@@ -67,7 +71,7 @@ class AuthProvidersController extends Controller
                     'avatar' => !empty($spotifyUser->user['images']) ? $spotifyUser->user['images'][0]['url'] : null,
                     'token' => $spotifyUser->token,
                     'refresh_token' => $spotifyUser->refreshToken,
-                    'expires_token' => now()->addSeconds($spotifyUser->expiresIn),
+                    'expires_token' => Carbon::now()->addSeconds($spotifyUser->expiresIn),
                     'country' => $spotifyUser->user['country'],
                 ]);
 
@@ -80,25 +84,25 @@ class AuthProvidersController extends Controller
                         'product' => $spotifyUser->user['product'],
                         'token' => $spotifyUser->token,
                         'refresh_token' => $spotifyUser->refreshToken,
-                        'expires_token' => now()->addSeconds($spotifyUser->expiresIn),
+                        'expires_token' => Carbon::now()->addSeconds($spotifyUser->expiresIn),
                     ]);
 
                 Auth::login($userDB);
             }
 
             DB::commit();
-            session()->regenerate();
-            return redirect()->route('dashboard');
+            Session::regenerate();
+            return Redirect::route('dashboard');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::channel('daily')->error($e);
-            return redirect('/')->with('error', 'Erro ao autenticar com o Spotify. Tente novamente.');
+            return Redirect::to('/')->with('error', 'Erro ao autenticar com o Spotify. Tente novamente.');
         }
     }
 
     public function logout(Logout $logout)
     {
         $logout();
-        return redirect('/');
+        return Redirect::to('/');
     }
 }

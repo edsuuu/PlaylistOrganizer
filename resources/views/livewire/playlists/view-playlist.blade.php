@@ -102,13 +102,36 @@
                                     Excluir músicas da playlist
                                 </h3>
                                 <p class="select-none text-gray-400 text-sm group-hover:text-gray-300 transition-colors">
-                                    Remover varias músicas da playlist
+                                    Remover várias músicas da playlist
                                 </p>
                             </div>
                             <div class="opacity-0 group-hover:opacity-100 transition-opacity">
                                 <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                 </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div wire:click="checkDuplicates"
+                         class="rounded-xl p-6 cursor-pointer group border border-gray-700/50">
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1">
+                                <h3 class="select-none text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
+                                    Validar Duplicadas
+                                </h3>
+                                <p class="select-none text-gray-400 text-sm group-hover:text-gray-300 transition-colors">
+                                    Encontrar músicas repetidas nesta playlist
+                                </p>
+                            </div>
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                                @if($isChecking)
+                                    <flux:icon.arrow-path class="animate-spin text-blue-400 w-6 h-6" />
+                                @else
+                                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -128,6 +151,8 @@
                                 'bg-white/30' => in_array($track['uri'], array_column($selectedTracks, 'uri'))])
                      @if($editMusics)
                          wire:click="toggleTrack('{{ $track['uri'] }}')"
+                     @else
+                         wire:click="play('{{ $track['uri'] }}')"
                      @endif
                 >
                     <div class="flex justify-end text-xs text-gray-400 mt-1">
@@ -136,9 +161,12 @@
 
                     <div class="flex gap-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-14 h-14 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
+                            <div class="relative w-14 h-14 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0 group/img">
                                 <img src="{{ $track['album_image'] }}" alt="album_image"
-                                     class="object-cover w-full h-full"/>
+                                     class="object-cover w-full h-full transition-transform duration-300 group-hover/img:scale-110"/>
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
+                                    <flux:icon.play class="w-7 h-7 text-white fill-current shadow-lg" />
+                                </div>
                             </div>
                             <div>
                                 <p class="text-white text-sm font-semibold">{{  $track['name'] ?? 'Sem nome' }}</p>
@@ -151,7 +179,14 @@
                     <div class="flex items-center justify-between text-xs text-gray-400 mt-1">
                         <span class="truncate">{{ $track['album_name'] ?? 'Album' }}</span>
                         <div class="flex items-center gap-3">
-                            <span class="text-gray-400 text-xs">{{ $track['duration_ms'] }}</span>
+                            <span class="text-gray-400 text-xs">
+                                @php
+                                    $ms = $track['duration_ms'] ?? 0;
+                                    $minutes = floor(($ms / 1000) / 60);
+                                    $seconds = floor(($ms / 1000) % 60);
+                                @endphp
+                                {{ $minutes }}:{{ str_pad($seconds, 2, '0', STR_PAD_LEFT) }}
+                            </span>
 
                             @if($canEditPlaylist && !$editMusics)
                                 <button type="button" wire:click="deleteSingleTrack('{{$track['uri']}}')"
@@ -188,4 +223,69 @@
             </div>
         @endif
     </div>
+
+    {{-- Modal de Duplicadas --}}
+    <flux:modal name="duplicates-modal" x-on:show-duplicates.window="$flux.modal('duplicates-modal').show()" class="md:w-[600px] bg-zinc-900 border-zinc-800" variant="flyout">
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="xl" class="text-white">Músicas Duplicadas</flux:heading>
+                <flux:subheading>Encontramos {{ count($duplicates) }} possíveis duplicadas nesta playlist.</flux:subheading>
+            </div>
+
+            @if(count($duplicates) > 0)
+                <div class="flex justify-between items-center bg-zinc-800/30 p-2 rounded-lg border border-zinc-700/50">
+                    <span class="text-xs text-zinc-400">{{ count($duplicatePositions) }} selecionadas</span>
+                    <button 
+                        @click="$wire.duplicatePositions = $wire.duplicates.map(d => d.position)" 
+                        type="button"
+                        class="text-xs text-purple-400 hover:text-purple-300 font-medium"
+                    >
+                        Selecionar Tudo
+                    </button>
+                </div>
+
+                <div class="max-h-[60vh] overflow-y-auto space-y-3 pr-2 custom-scrollbar">
+                    @foreach($duplicates as $dupe)
+                        <label class="flex items-center gap-4 p-3 bg-zinc-800/10 hover:bg-zinc-800/30 rounded-lg border border-zinc-800 hover:border-zinc-700 transition cursor-pointer group">
+                            <div class="flex items-center">
+                                <input 
+                                    type="checkbox" 
+                                    wire:model="duplicatePositions" 
+                                    value="{{ $dupe['position'] }}" 
+                                    class="rounded border-zinc-700 bg-zinc-900 text-purple-600 focus:ring-purple-500"
+                                >
+                            </div>
+                            <img src="{{ $dupe['image'] }}" class="w-12 h-12 rounded object-cover shadow-lg">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-bold text-white truncate">{{ $dupe['name'] }}</p>
+                                <p class="text-xs text-zinc-400 truncate">{{ $dupe['artist'] }}</p>
+                                <div class="mt-1">
+                                    <span class="text-[9px] uppercase tracking-tighter text-orange-400 font-black px-1.5 py-0.5 bg-orange-400/10 rounded ring-1 ring-orange-400/20">{{ $dupe['reason'] }}</span>
+                                </div>
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+
+                <div class="flex gap-3 justify-end pt-4 border-t border-zinc-800">
+                    <flux:modal.close>
+                        <flux:button variant="ghost">Cancelar</flux:button>
+                    </flux:modal.close>
+                    <flux:button 
+                        wire:click="removeSelectedDuplicates" 
+                        variant="primary" 
+                        class="bg-red-500 hover:bg-red-600 border-none px-6"
+                        wire:loading.attr="disabled"
+                    >
+                        Remover Selecionadas
+                    </flux:button>
+                </div>
+            @else
+                <div class="flex flex-col items-center gap-4 py-12">
+                    <x-heroicon-o-check-circle class="w-16 h-16 text-green-500 opacity-50" />
+                    <p class="text-zinc-400">Nenhuma duplicada encontrada!</p>
+                </div>
+            @endif
+        </div>
+    </flux:modal>
 </div>

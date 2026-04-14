@@ -3,6 +3,7 @@
 namespace App\Livewire\Playlists;
 
 use App\Services\SpotifyService;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -20,6 +21,9 @@ class ViewPlaylist extends Component
     public bool $editMusics = false;
     public array $selectedTracks = [];
     public bool $favoritePlaylist = false;
+    public array $duplicates = [];
+    public bool $isChecking = false;
+    public array $duplicatePositions = [];
 
     public function __construct()
     {
@@ -104,6 +108,107 @@ class ViewPlaylist extends Component
         $this->dispatch('refreshPlaylistsUser');
     }
 
+    /**
+     * Identifica músicas duplicadas na playlist por ID ou Nome.
+     */
+    public function checkDuplicates(): void
+    {
+        $this->isChecking = true;
+        $this->duplicates = [];
+        
+        $allTracks = [];
+        $offset = 0;
+        $limit = 100;
+        $total = $this->playlistInfo['tracks']['total'] ?? 0;
+
+        try {
+            // Se a playlist for muito grande, pegamos tudo em lotes
+            do {
+                $response = $this->spotify->getTracksPlaylist($this->playlistId, $offset, $limit);
+                $batch = $response['tracks'] ?? [];
+                
+                // Adicionamos a posição absoluta para remoção precisa depois
+                foreach ($batch as $index => $track) {
+                    $track['position'] = $offset + $index;
+                    $allTracks[] = $track;
+                }
+
+                $offset += $limit;
+            } while ($offset < $total && !empty($batch));
+
+            $seenIds = [];
+            $seenNames = [];
+
+            foreach ($allTracks as $track) {
+                $id = $track['id'] ?? null;
+                $name = mb_strtolower($track['name'] ?? '');
+                $artist = mb_strtolower($track['artist'] ?? '');
+                
+                $isDuplicate = false;
+                $reason = '';
+
+                $compositeKey = "{$name}|{$artist}";
+
+                if ($id && isset($seenIds[$id])) {
+                    $isDuplicate = true;
+                    $reason = 'ID Duplicado';
+                } elseif ($compositeKey && isset($seenNames[$compositeKey])) {
+                    $isDuplicate = true;
+                    $reason = 'Nome e Artista Duplicados';
+                }
+
+                if ($isDuplicate) {
+                    $this->duplicates[] = [
+                        'id' => $id,
+                        'name' => $track['name'],
+                        'artist' => $track['artist'],
+                        'image' => $track['image'],
+                        'uri' => $track['uri'],
+                        'position' => $track['position'],
+                        'reason' => $reason
+                    ];
+                }
+
+                if ($id) $seenIds[$id] = true;
+                if ($compositeKey) $seenNames[$compositeKey] = true;
+            }
+        } catch (\Exception $e) {
+            Log::channel('spotify')->error("Erro ao validar duplicatas: " . $e->getMessage());
+        }
+
+        $this->isChecking = false;
+        $this->dispatch('show-duplicates');
+    }
+
+    /**
+     * Remove as duplicatas selecionadas usando suas posições.
+     */
+    public function removeSelectedDuplicates(): void
+    {
+        if (empty($this->duplicatePositions)) return;
+
+        $tracksToRemove = [];
+        foreach ($this->duplicatePositions as $pos) {
+            // Encontra a URI nos duplicados
+            $dup = collect($this->duplicates)->firstWhere('position', $pos);
+            if ($dup) {
+                $tracksToRemove[] = [
+                    'uri' => $dup['uri'],
+                    'positions' => [(int)$pos]
+                ];
+            }
+        }
+
+        if (!empty($tracksToRemove)) {
+            $this->spotify->removeMusicsFromPlaylist($this->playlistId, $this->playlistInfo['snapshot_id'], $tracksToRemove);
+            $this->duplicates = [];
+            $this->duplicatePositions = [];
+            $this->getPlaylist();
+            $this->dispatch('refreshPlaylistsUser');
+            session()->flash('message', 'Duplicadas removidas com sucesso!');
+        }
+    }
+
 
     public function loadMore(): void
     {
@@ -131,6 +236,12 @@ class ViewPlaylist extends Component
         $this->playlistTracks['nextUrl'] = $moreMusics['nextUrl'];
         $this->playlistTracks['limit'] = $moreMusics['limit'];
         $this->playlistTracks['total'] = $moreMusics['total'];
+    }
+
+    public function play(string $uri): void
+    {
+        $this->spotify->playTrack($uri);
+        $this->dispatch('playbackUpdated');
     }
 
     public function render()

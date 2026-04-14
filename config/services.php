@@ -40,5 +40,11 @@ return [
         'client_secret' => env('SPOTIFY_CLIENT_SECRET'),
         'redirect' => env('SPOTIFY_REDIRECT_URI')
     ],
+    'google' => [
+        'gemini' => [
+            'key' => env('GOOGLE_GEMINI_KEY'),
+            'url' => env('GOOGLE_GEMINI_URL'),
+        ],
+    ],
 
 ];

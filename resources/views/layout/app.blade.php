@@ -37,7 +37,8 @@
     <flux:navlist variant="outline">
 
         <flux:navlist.item icon="musical-note" :href="route('dashboard')" :current="request()->routeIs('dashboard')">Dashboard</flux:navlist.item>
-        <flux:navlist.item icon="musical-note" :href="route('liked-playlist')" :current="request()->routeIs('liked-playlist')">Músicas curtidas</flux:navlist.item>
+        <flux:navlist.item icon="heart" :href="route('liked-playlist')" :current="request()->routeIs('liked-playlist')">Músicas curtidas</flux:navlist.item>
+        <flux:navlist.item icon="sparkles" :href="route('ai-generator')" :current="request()->routeIs('ai-generator')">Gerar com IA</flux:navlist.item>
 
         <flux:navlist.group heading="Playlists" class="grid">
             @livewire('sidebar')

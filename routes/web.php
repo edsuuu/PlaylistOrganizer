@@ -15,6 +15,7 @@ Route::prefix('oauth2')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::view('dashboard', 'spotify.dashboard')->name('dashboard');
     Route::view('musicas-curtidas', 'spotify.liked-music-view-playlist')->name('liked-playlist');
+    Route::view('ai-generator', 'spotify.ai-generator')->name('ai-generator');
     Route::view('playlist/{id}', 'spotify.view-playlist')->name('edit-playlist');
     Route::view('playlist/{id}/novas-musicas', 'spotify.new-musics-playlist')->name('new-musics-playlist');
     Route::view('playlist/{id}/musicas-curtidas', 'spotify.liked-musics-playlist')->name('liked-musics-playlist');

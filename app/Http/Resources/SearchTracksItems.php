@@ -18,12 +18,17 @@ class SearchTracksItems extends JsonResource
         return [
             'id' => $this['id'] ?? null,
             'name' => $this['name'] ?? null,
-            'duration_ms' => $this->formatDuration($this['duration_ms'] ?? 0),
+            'duration_ms' => $this['duration_ms'] ?? 0,
+            'artist' => $this['artists'][0]['name'] ?? null,
+            'album' => $this['album']['name'] ?? null,
+            'image' => $this['album']['images'][0]['url'] ?? null,
+            'preview_url' => $this['preview_url'] ?? null,
+            'uri' => $this['uri'] ?? null,
+
+            // Compatibility / Deprecated aliases
             'artists_name' => $this['artists'][0]['name'] ?? null,
-            'album_id' => $this['album']['id'] ?? null,
             'album_name' => $this['album']['name'] ?? null,
             'album_image' => $this['album']['images'][0]['url'] ?? null,
-            'uri' => $this['uri'] ?? null,
         ];
     }
 

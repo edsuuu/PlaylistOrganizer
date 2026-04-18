@@ -1,5 +1,5 @@
 <div class="relative">
-    <div wire:loading wire:target="searchMusics,addMultiplesMusicToPlaylist,addSingleMusicToPlaylist"
+    <div wire:loading wire:target="searchMusics,addMultiplesMusicToPlaylist,addSingleMusicToPlaylist,getMusicOnlyType"
          class="fixed top-0 left-0 w-full h-full md:h-screen z-10">
         <div class="w-full h-full flex items-center justify-center bg-white/30 rounded-2xl">
             <x-heroicon-s-arrow-path class="text-green-spotify w-7 h-7 animate-spin"/>
@@ -70,7 +70,6 @@
 
                 <div class="flex flex-col md:flex-row gap-4 flex-shrink-0">
                     @if(!$favoriteMusic)
-                        {{-- todo: lembrar de incluir o input de pesquisa para musicas favoritas                        --}}
 
                         <button wire:click="clearSearch"
                                 class="flex items-center p-1 gap-3 cursor-pointer rounded-lg transition-all duration-300 whitespace-nowrap hover:bg-green-spotify/30">
@@ -95,8 +94,19 @@
                             <p class="text-gray-400 text-sm max-md:hidden">Adicionar várias músicas de uma vez</p>
                         </div>
                     </button>
-                </div>
+
+                        <button wire:click="getMusicOnlyType"
+                                class="flex items-center p-1 gap-3 cursor-pointer rounded-lg transition-all duration-300 whitespace-nowrap hover:bg-green-spotify/30">
+                            <div
+                                class="flex-shrink-0 w-7 h-7 bg-green-spotify/20 rounded-full flex items-center justify-center">
+                                <x-heroicon-s-musical-note class="w-5 h-5 text-green-spotify"/>
+                            </div>
+                            <div class="text-left">
+                                <h3 class="text-white font-medium">Musics artist</h3>
+                            </div>
+                        </button>
             </div>
+        </div>
     </div>
 
     @isset($this->playlistTracks['tracks'])

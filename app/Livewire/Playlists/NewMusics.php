@@ -163,6 +163,58 @@ class NewMusics extends Component
         }
     }
 
+    public function getMusicOnlyType()
+    {
+        set_time_limit(300);
+
+        while (
+            isset($this->playlistTracks['total']) &&
+            isset($this->playlistTracks['tracks']) &&
+            count($this->playlistTracks['tracks']) < $this->playlistTracks['total']
+        ) {
+            $this->loadMore();
+        }
+
+        $neighbourhoodMusics = [];
+        $monkeysMusics = [];
+        $tracks = $this->playlistTracks['tracks'] ?? [];
+
+        foreach ($tracks as $music) {
+            if (isset($music['artist'])) {
+                if (stripos($music['artist'], 'The Neighbourhood') !== false) {
+                    $neighbourhoodMusics[] = $music;
+                } elseif (stripos($music['artist'], 'Arctic Monkeys') !== false) {
+                    $monkeysMusics[] = $music;
+                }
+            }
+        }
+
+        $neighbourhoodUris = array_column($neighbourhoodMusics, 'uri');
+        $monkeysUris = array_column($monkeysMusics, 'uri');
+
+        $allUris = array_merge($neighbourhoodUris, $monkeysUris);
+
+        if (!empty($allUris)) {
+            $allUris = array_unique($allUris);
+
+            $urisToAdd = [];
+            foreach ($allUris as $uri) {
+                $haveTrackInPlaylist = $this->spotify->countTrackInPlaylist($this->playlistId, $uri);
+                if ($haveTrackInPlaylist == 0) {
+                    $urisToAdd[] = $uri;
+                }
+            }
+
+            if (!empty($urisToAdd)) {
+                foreach (array_chunk($urisToAdd, 100) as $chunk) {
+                    $this->spotify->addMusicsInPlaylist($this->playlistId, $chunk);
+                }
+            }
+        }
+
+        return redirect()->route('edit-playlist', $this->playlistId);
+    }
+
     public function render()
     {
         return view('livewire.playlists.new-musics');

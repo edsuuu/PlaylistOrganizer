@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "spotify": {
+      "command": "/opt/homebrew/opt/php@8.4/bin/php",
+      "args": ["artisan", "mcp:start", "spotify"]
+    }
+  }
+}

@@ -38,12 +38,17 @@ return [
         'url' => env('SPOTIFY_API_URL'),
         'client_id' => env('SPOTIFY_CLIENT_ID'),
         'client_secret' => env('SPOTIFY_CLIENT_SECRET'),
-        'redirect' => env('SPOTIFY_REDIRECT_URI')
+        'redirect' => env('SPOTIFY_REDIRECT_URI'),
+        // Usuário (e-mail) que o servidor MCP usa para agir no Spotify.
+        // Se vazio, usa o primeiro usuário com conta Spotify vinculada.
+        'mcp_user_email' => env('MCP_SPOTIFY_USER_EMAIL'),
     ],
     'google' => [
         'gemini' => [
             'key' => env('GOOGLE_GEMINI_KEY'),
             'url' => env('GOOGLE_GEMINI_URL'),
+            'model' => env('GOOGLE_GEMINI_MODEL', 'gemini-2.5-flash'),
+            'fallback_model' => env('GOOGLE_GEMINI_FALLBACK_MODEL', 'gemini-2.0-flash'),
         ],
     ],
 
